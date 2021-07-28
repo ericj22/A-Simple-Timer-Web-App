@@ -1,16 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import { Button, Drawer, List, ListItem, ListItemText, Divider, FormControl, Input, InputLabel } from '@material-ui/core';
-// From https://upmostly.com/tutorials/build-a-react-timer-component-using-hooks
-
-/*
-TODO:
- - Make it so time is set in the set option only after the button is pressed
- - Make the cancel function work -- the only solution I can think of is another variable for default time LOL I'm bad
- - Use Date() time to measure time to make the timer more accurate
-   - Use difference between current date and start date to find elapsed time, then subtract that difference from initial time set
- - IDK use like redux or something? Reduce the amount of state here lmao
- - Figure out how to make the thing play your own audio files
-*/
+import { Button, Drawer, List, ListItem, ListItemText, Divider, FormControl, Input, InputLabel, ClickAwayListener } from '@material-ui/core';
+import soundfile from './media/AlarmSound.wav';
+import './HookTimer.css'
 
 function HookTimer() {
     const [sec, setSec] = useState(300);
@@ -33,15 +24,11 @@ function HookTimer() {
     console.log(Date.now());
 
     const list = (anchor) => (
+        <ClickAwayListener onClickAway={toggleDrawer('top', false)}>
         <div
           className="list fullList"
           role="presentation"
-          // onClick={toggleDrawer(anchor, false)}
-          // onKeyDown={toggleDrawer(anchor, false)}
         >
-            <link rel="preconnect" href="https://fonts.googleapis.com"/>
-            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-            <link href="https://fonts.googleapis.com/css2?family=Encode+Sans+SC:wght@300&display=swap" rel="stylesheet"/>
             <List>
                 <FormControl className="hookTimer__formControl">
                     <InputLabel>Minutes</InputLabel>
@@ -62,6 +49,7 @@ function HookTimer() {
                 </ListItem>
             </List>
         </div>
+        </ClickAwayListener>
     );
 
     const setTime = (anchor, open) => (event) => {
@@ -104,12 +92,7 @@ function HookTimer() {
     }
 
     const play = () => {
-        var audio = new Audio('https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3');
-        //var audio = new Audio('../alarm_sound.wav')
-        // const play = require('audio-play');
-        // const load = required('audio-loader');
-        // load('/Users/')
-        // var audio = new Audio('C:/Users/eric8/OneDrive/Desktop/Hackermans/Timer App/eji_react_timer_app/alarm sound.WAV');
+        var audio = new Audio(soundfile);
         audio.play();
     }
 
@@ -117,7 +100,6 @@ function HookTimer() {
         let interval = null;
         if(isActive && sec > 0) {
             interval = setInterval(() => {
-                //setSec(sec => sec - 1);
                 let diff = Date.now() - startTime;
                 setSec(Math.floor((defTime*1000 - elapsed - diff)/1000));
             }, 10);
@@ -148,7 +130,6 @@ function HookTimer() {
                 <React.Fragment key={anchor}>
                     <Button onClick={toggleDrawer(anchor, true)}>Set Time</Button>
                     <Drawer anchor={anchor} open={top[anchor]} >
-                    {/* onClose={toggleDrawer(anchor, false)} --> closes the drawer on click anywhere */}
                         {list(anchor)}
                     </Drawer>
                 </React.Fragment>
